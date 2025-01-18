@@ -3,7 +3,8 @@ import shared
 
 struct ContentView: View {
 	let greet = Greeting().greet()
-    private var viewModel = GameUiModel(data: GameDataFactory.shared.create())
+//    private var viewModel = GameUiModel(data: GameDataFactory.shared.create())
+    @ObservedObject private(set) var viewModel: ViewModel
 
 	var body: some View {
         GeometryReader { proxy in
@@ -14,26 +15,6 @@ struct ContentView: View {
                     .ignoresSafeArea()
                 
                 drawColumn(items: ["1", "2", "3"], width, height)
-                
-//                VStack(spacing: 1.4) {
-//                    HStack(spacing: 1.4) {
-//                        drawItem(width, height)
-//                        drawItem(width, height)
-//                        drawItem(width, height)
-//                    }
-//                    
-//                    HStack(spacing: 1.4) {
-//                        drawItem(width, height)
-//                        drawItem(width, height)
-//                        drawItem(width, height)
-//                    }
-//                    
-//                    HStack(spacing: 1.4) {
-//                        drawItem(width, height)
-//                        drawItem(width, height)
-//                        drawItem(width, height)
-//                    }
-//                }
             }
         }
 	}
@@ -66,9 +47,24 @@ struct ContentView: View {
         )
     }
 }
+//
+//struct ContentView_Previews: PreviewProvider {
+//	static var previews: some View {
+//		ContentView()
+//	}
+//}
 
-struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
-	}
+extension ContentView {
+    @MainActor
+    class ViewModel: ObservableObject {
+        @Published var values: [String] = []
+        
+        func startObserving() async {
+            let emittedValues = Greeting().countToTen()
+            //  The for await loop handles the asynchronous sequence of emitted values.
+            for await number in emittedValues {
+                self.values.append(number)
+            }
+        }
+    }
 }
