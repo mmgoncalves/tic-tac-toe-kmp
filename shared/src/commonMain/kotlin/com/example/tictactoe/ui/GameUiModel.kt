@@ -28,9 +28,18 @@ public class GameUiModel(
         updateHeaderMessage()
     }
 
+    fun restartGame() {
+        _state.update { data }
+        updateHeaderMessage()
+    }
+
     fun updateItem(columnId: ColumnId, itemId: ItemId) {
         val status = state.value.columns.getValue(columnId).getValue(itemId)
         if (status != ItemStatus.EMPTY) {
+            return
+        }
+
+        if (state.value.gameStatus.result != GameResult.Playing) {
             return
         }
 
@@ -61,22 +70,36 @@ public class GameUiModel(
 
     private fun updateGameResult() {
         if (checkPlayerWinner(player1)) {
-            _state.update { state.value.copy(gameStatus = GameStatus(result = GameResult.Winner, winner = player1)) }
+            _state.update { state.value.copy(
+                gameStatus = GameStatus(result = GameResult.Winner, winner = player1),
+                showRestartButton = true
+            ) }
         } else if (checkPlayerWinner(player2)) {
-            _state.update { state.value.copy(gameStatus = GameStatus(result = GameResult.Winner, winner = player2)) }
+            _state.update { state.value.copy(
+                gameStatus = GameStatus(result = GameResult.Winner, winner = player2),
+                showRestartButton = true
+            ) }
         } else if (checkGameFinish()) {
-            _state.update { state.value.copy(gameStatus = GameStatus(result = GameResult.Tie)) }
+            _state.update { state.value.copy(
+                gameStatus = GameStatus(result = GameResult.Tie),
+                showRestartButton = true
+            ) }
         } else {
-            _state.update { state.value.copy(gameStatus = GameStatus(result = GameResult.Playing)) }
+            _state.update { state.value.copy(
+                gameStatus = GameStatus(result = GameResult.Playing),
+                showRestartButton = false
+            ) }
         }
         updateHeaderMessage()
     }
 
     private fun checkGameFinish(): Boolean {
-        val result = state.value.columns.values.none { columns ->
-            columns.values.none { it == ItemStatus.EMPTY }
+        val result = state.value.columns.values.fold(0) { acc, value ->
+            val isEmpty = value.values.none { it == ItemStatus.EMPTY }
+            acc + if (isEmpty) 0 else 1
         }
-        return result.not()
+
+        return result == 0
     }
 
     private fun checkPlayerWinner(

@@ -7,7 +7,8 @@ data class GameData(
     val columns: GameUiData,
     val currentPlayer: PlayerData,
     val gameStatus: GameStatus,
-    val headerMessage: String
+    val headerMessage: String,
+    val showRestartButton: Boolean
 )
 
 data class GameStatus(
@@ -90,7 +91,8 @@ object GameDataFactory {
             ),
             currentPlayer = currentPlayer,
             gameStatus = GameStatus(GameResult.Playing),
-            headerMessage = ""
+            headerMessage = "",
+            showRestartButton = false
         )
     }
 }
