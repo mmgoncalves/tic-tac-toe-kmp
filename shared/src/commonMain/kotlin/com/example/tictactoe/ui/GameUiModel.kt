@@ -5,7 +5,6 @@ import com.example.tictactoe.Domain.GameData
 import com.example.tictactoe.Domain.GameDataFactory
 import com.example.tictactoe.Domain.GameResult
 import com.example.tictactoe.Domain.GameStatus
-import com.example.tictactoe.Domain.GameUiData
 import com.example.tictactoe.Domain.ItemId
 import com.example.tictactoe.Domain.ItemStatus
 import com.example.tictactoe.Domain.PlayerData

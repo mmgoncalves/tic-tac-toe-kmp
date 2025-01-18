@@ -200,7 +200,7 @@ private fun DrawItem(
 
 @Preview
 @Composable
-fun DefaultPreview() {
+private fun DefaultPreview() {
     MyApplicationTheme {
         ContentBody(
             data = GameDataFactory.create(),
