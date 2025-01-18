@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,6 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -47,6 +52,9 @@ fun ContentView(model: GameUiModel = GameUiModel()) {
         data = state,
         onAction = { columnId, itemId ->
             uiModel.updateItem(columnId, itemId)
+        },
+        restartAction = {
+            uiModel.restartGame()
         }
     )
 }
@@ -54,7 +62,8 @@ fun ContentView(model: GameUiModel = GameUiModel()) {
 @Composable
 private fun ContentBody(
     data: GameData,
-    onAction: (ColumnId, ItemId) -> Unit
+    onAction: (ColumnId, ItemId) -> Unit,
+    restartAction: () -> Unit
 ) {
     var size by remember { mutableStateOf(IntSize.Zero) }
 
@@ -66,7 +75,7 @@ private fun ContentBody(
                 .fillMaxSize()
                 .onSizeChanged { size = it }
         ) {
-            DrawColumn(data, size, onAction)
+            DrawColumn(data, size, onAction, restartAction)
         }
     }
 }
@@ -75,7 +84,8 @@ private fun ContentBody(
 private fun DrawColumn(
     data: GameData,
     size: IntSize,
-    onAction: (ColumnId, ItemId) -> Unit
+    onAction: (ColumnId, ItemId) -> Unit,
+    restartAction: () -> Unit
 ) {
     val result = data.gameStatus.result
     val headerText = if (result == GameResult.Playing) {
@@ -87,22 +97,20 @@ private fun DrawColumn(
             result.getMessage()
         }
     }
-//    val headerText = data.gameStatus.result.text
-//        .takeIf {
-//            data.gameStatus.result != GameResult.Playing
-//        } ?: "É a vez do jogador ${data.currentPlayer.status.playerName}"
     Column {
         Text(
             text = headerText ?: "VAZIO",
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 20.dp)
+                .padding(bottom = 10.dp)
                 .padding(horizontal = 20.dp)
                 .sideBorder(
-                    color = Color.Gray,
+                    color = Color.DarkGray,
                     thickness = 0.3f.dp,
                     sides = setOf(BorderSide.Bottom)
-                ),
+                )
+                .padding(bottom = 10.dp)
+            ,
             style = TextStyle(
                 fontSize = 18.sp,
                 color = Color.DarkGray,
@@ -116,6 +124,23 @@ private fun DrawColumn(
                 items = it.value,
                 size = size,
                 onAction = onAction
+            )
+        }
+
+        if (data.showRestartButton) {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 20.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan),
+                onClick = restartAction,
+                content = {
+                    Text(
+                        text = "Reiniciar partida",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.DarkGray
+                    )
+                }
             )
         }
     }
@@ -179,7 +204,8 @@ fun DefaultPreview() {
     MyApplicationTheme {
         ContentBody(
             data = GameDataFactory.create(),
-            onAction = { _, _ -> }
+            onAction = { _, _ -> },
+            restartAction = {}
         )
     }
 }
