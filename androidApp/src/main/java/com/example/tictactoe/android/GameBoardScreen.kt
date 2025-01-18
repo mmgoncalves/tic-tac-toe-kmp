@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,8 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -34,6 +31,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.rememberScreenModel
+import cafe.adriel.voyager.core.screen.Screen
 import com.example.tictactoe.Domain.ColumnId
 import com.example.tictactoe.Domain.GameData
 import com.example.tictactoe.Domain.GameDataFactory
@@ -44,19 +44,29 @@ import com.example.tictactoe.android.helper.sideBorder
 import com.example.tictactoe.ui.BorderSide
 import com.example.tictactoe.ui.GameUiModel
 
-@Composable
-fun ContentView(model: GameUiModel = GameUiModel()) {
-    val uiModel by remember { mutableStateOf(model) }
-    val state by uiModel.state.collectAsState()
-    ContentBody(
-        data = state,
-        onAction = { columnId, itemId ->
-            uiModel.updateItem(columnId, itemId)
-        },
-        restartAction = {
-            uiModel.restartGame()
-        }
-    )
+class GameBoardModel : ScreenModel {}
+
+data class GameBoardScreen(
+    private val uiModel: GameBoardModel,
+    private val gameUiModel: GameUiModel = GameUiModel()
+): Screen {
+
+    @Composable
+    override fun Content() {
+        val screenModel = rememberScreenModel { uiModel }
+        val model by remember { mutableStateOf(gameUiModel) }
+        val state by model.state.collectAsState()
+
+        ContentBody(
+            data = state,
+            onAction = { columnId, itemId ->
+                model.updateItem(columnId, itemId)
+            },
+            restartAction = {
+                model.restartGame()
+            }
+        )
+    }
 }
 
 @Composable
@@ -200,7 +210,7 @@ private fun DrawItem(
 
 @Preview
 @Composable
-fun DefaultPreview() {
+private fun DefaultPreview() {
     MyApplicationTheme {
         ContentBody(
             data = GameDataFactory.create(),
