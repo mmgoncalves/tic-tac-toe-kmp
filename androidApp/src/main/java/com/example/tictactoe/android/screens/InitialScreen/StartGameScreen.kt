@@ -1,4 +1,4 @@
-package com.example.tictactoe.android
+package com.example.tictactoe.android.screens.InitialScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,21 +31,24 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.tictactoe.Domain.ItemStatus
 import com.example.tictactoe.Domain.PlayerData
+import com.example.tictactoe.android.MyApplicationTheme
+import com.example.tictactoe.android.R
+import com.example.tictactoe.android.screens.gameboard.GameboardScreen
 
 class StartGameScreen : Screen {
 
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        ContentBody { player ->
-
+        ContentBody { firstPlayer, secondPlayer ->
+            navigator.push(GameboardScreen(firstPlayer, secondPlayer))
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ContentBody(onClick: (PlayerData) -> Unit) {
+private fun ContentBody(onClick: (PlayerData, PlayerData) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -92,7 +95,10 @@ private fun ContentBody(onClick: (PlayerData) -> Unit) {
 
                 Card(
                     onClick = {
-                        onClick(PlayerData(status = ItemStatus.X))
+                        onClick(
+                            PlayerData(status = ItemStatus.X),
+                            PlayerData(status = ItemStatus.O)
+                        )
                     },
                     elevation = CardDefaults.cardElevation(
                         defaultElevation = 8.dp
@@ -116,7 +122,10 @@ private fun ContentBody(onClick: (PlayerData) -> Unit) {
 
                 Card(
                     onClick = {
-                        onClick(PlayerData(status = ItemStatus.O))
+                        onClick(
+                            PlayerData(status = ItemStatus.O),
+                            PlayerData(status = ItemStatus.X)
+                        )
                     },
                     elevation = CardDefaults.cardElevation(
                         defaultElevation = 8.dp
@@ -147,6 +156,6 @@ private fun ContentBody(onClick: (PlayerData) -> Unit) {
 @Composable
 private fun StartGamePreview() {
     MyApplicationTheme {
-        ContentBody { _ -> }
+        ContentBody { _, _ -> }
     }
 }
