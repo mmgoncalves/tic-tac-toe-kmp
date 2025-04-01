@@ -32,19 +32,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import com.example.tictactoe.Domain.ColumnId
-import com.example.tictactoe.Domain.GameData
-import com.example.tictactoe.Domain.GameDataFactory
-import com.example.tictactoe.Domain.ItemId
-import com.example.tictactoe.Domain.ItemStatus
-import com.example.tictactoe.Domain.PlayerData
+import com.example.tictactoe.domain.ColumnId
+import com.example.tictactoe.domain.GameData
+import com.example.tictactoe.domain.GameDataFactory
+import com.example.tictactoe.domain.ItemId
+import com.example.tictactoe.domain.ItemStatus
+import com.example.tictactoe.domain.PlayerData
 import com.example.tictactoe.android.MyApplicationTheme
 import com.example.tictactoe.android.helper.sideBorder
 import com.example.tictactoe.ui.GameUiModel
 
 data class GameboardScreen(
-    private val firstPlayer: PlayerData,
-    private val secondPlayer: PlayerData,
     private val gameUiModel: GameUiModel = GameUiModel()
 ) : Screen {
 
@@ -69,7 +67,7 @@ private fun ContentBody(
     restartAction: () -> Unit
 ) {
     val size = LocalConfiguration.current.screenWidthDp.dp - 40.dp
-    var isEnable by remember { mutableStateOf(false) }
+    var isEnable by remember { mutableStateOf(true) }
     Box(
         modifier = Modifier
             .fillMaxSize()

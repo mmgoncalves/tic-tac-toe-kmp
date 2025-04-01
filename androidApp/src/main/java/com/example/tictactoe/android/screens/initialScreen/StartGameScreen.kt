@@ -31,11 +31,12 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.tictactoe.Domain.ItemStatus
-import com.example.tictactoe.Domain.PlayerData
+import com.example.tictactoe.domain.ItemStatus
+import com.example.tictactoe.domain.PlayerData
 import com.example.tictactoe.android.MyApplicationTheme
 import com.example.tictactoe.android.R
 import com.example.tictactoe.android.screens.gameboard.GameboardScreen
+import com.example.tictactoe.ui.GameUiModel
 
 class StartGameScreen : Screen {
     @Composable
@@ -47,10 +48,26 @@ class StartGameScreen : Screen {
     }
 
     private fun handleNavigation(selectedPlayer: ItemStatus, navigator: Navigator) {
-        if (selectedPlayer == ItemStatus.X) {
-            navigator.push(GameboardScreen(PlayerData(status = ItemStatus.X), PlayerData(status = ItemStatus.O)))
-        } else {
-            navigator.push(GameboardScreen(PlayerData(status = ItemStatus.O), PlayerData(status = ItemStatus.X)))
+        when (selectedPlayer) {
+            ItemStatus.X -> {
+                val uiModel = GameUiModel(
+                    player1 = PlayerData(ItemStatus.X),
+                    player2 = PlayerData(ItemStatus.O)
+                )
+                navigator.push(GameboardScreen(uiModel))
+            }
+
+            ItemStatus.O -> {
+                val uiModel = GameUiModel(
+                    player1 = PlayerData(ItemStatus.O),
+                    player2 = PlayerData(ItemStatus.X)
+                )
+                navigator.push(GameboardScreen(uiModel))
+            }
+
+            ItemStatus.EMPTY -> {
+                navigator.push(GameboardScreen())
+            }
         }
     }
 }

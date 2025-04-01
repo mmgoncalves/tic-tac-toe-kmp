@@ -1,4 +1,4 @@
-package com.example.tictactoe.Domain
+package com.example.tictactoe.domain
 
 import com.example.tictactoe.ui.BorderSide
 

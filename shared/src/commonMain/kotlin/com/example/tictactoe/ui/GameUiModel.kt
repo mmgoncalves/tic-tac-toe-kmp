@@ -1,13 +1,13 @@
 package com.example.tictactoe.ui
 
-import com.example.tictactoe.Domain.ColumnId
-import com.example.tictactoe.Domain.GameData
-import com.example.tictactoe.Domain.GameDataFactory
-import com.example.tictactoe.Domain.GameResult
-import com.example.tictactoe.Domain.GameStatus
-import com.example.tictactoe.Domain.ItemId
-import com.example.tictactoe.Domain.ItemStatus
-import com.example.tictactoe.Domain.PlayerData
+import com.example.tictactoe.domain.ColumnId
+import com.example.tictactoe.domain.GameData
+import com.example.tictactoe.domain.GameDataFactory
+import com.example.tictactoe.domain.GameResult
+import com.example.tictactoe.domain.GameStatus
+import com.example.tictactoe.domain.ItemId
+import com.example.tictactoe.domain.ItemStatus
+import com.example.tictactoe.domain.PlayerData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
