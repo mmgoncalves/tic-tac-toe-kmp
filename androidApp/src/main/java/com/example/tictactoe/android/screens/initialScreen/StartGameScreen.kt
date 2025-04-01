@@ -1,5 +1,6 @@
-package com.example.tictactoe.android.screens.InitialScreen
+package com.example.tictactoe.android.screens.initialScreen
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.tictactoe.Domain.ItemStatus
 import com.example.tictactoe.Domain.PlayerData
@@ -36,19 +38,25 @@ import com.example.tictactoe.android.R
 import com.example.tictactoe.android.screens.gameboard.GameboardScreen
 
 class StartGameScreen : Screen {
-
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        ContentBody { firstPlayer, secondPlayer ->
-            navigator.push(GameboardScreen(firstPlayer, secondPlayer))
+        ContentBody {
+            handleNavigation(it, navigator)
+        }
+    }
+
+    private fun handleNavigation(selectedPlayer: ItemStatus, navigator: Navigator) {
+        if (selectedPlayer == ItemStatus.X) {
+            navigator.push(GameboardScreen(PlayerData(status = ItemStatus.X), PlayerData(status = ItemStatus.O)))
+        } else {
+            navigator.push(GameboardScreen(PlayerData(status = ItemStatus.O), PlayerData(status = ItemStatus.X)))
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ContentBody(onClick: (PlayerData, PlayerData) -> Unit) {
+private fun ContentBody(onClick: (ItemStatus) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -92,70 +100,63 @@ private fun ContentBody(onClick: (PlayerData, PlayerData) -> Unit) {
                     .padding(bottom = 50.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-
-                Card(
-                    onClick = {
-                        onClick(
-                            PlayerData(status = ItemStatus.X),
-                            PlayerData(status = ItemStatus.O)
-                        )
-                    },
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 8.dp
+                CardBox(
+                    settings = PlayerSettings(
+                        avatar = R.drawable.player_x,
+                        status = ItemStatus.X
                     ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White,
+                    onClick = onClick
+                )
+                CardBox(
+                    settings = PlayerSettings(
+                        avatar = R.drawable.player_o,
+                        status = ItemStatus.O
                     ),
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier
-                        .padding(end = 20.dp)
-                        .size(143.dp)
-
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.player_x),
-                        contentDescription = null,
-                        alignment = Alignment.Center,
-                        contentScale = ContentScale.Fit
-                    )
-                }
-
-                Card(
-                    onClick = {
-                        onClick(
-                            PlayerData(status = ItemStatus.O),
-                            PlayerData(status = ItemStatus.X)
-                        )
-                    },
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 8.dp
-                    ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White,
-                    ),
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier
-                        .padding(end = 20.dp)
-                        .size(143.dp)
-
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.player_o),
-                        contentDescription = null,
-                        alignment = Alignment.Center,
-                        contentScale = ContentScale.Fit
-                    )
-                }
+                    onClick = onClick
+                )
 
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CardBox(settings: PlayerSettings, onClick: (ItemStatus) -> Unit) {
+    Card(
+        onClick = {
+            onClick(settings.status)
+        },
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White,
+        ),
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier
+            .padding(end = 20.dp)
+            .size(143.dp)
+
+    ) {
+        Image(
+            painter = painterResource(id = settings.avatar),
+            contentDescription = null,
+            alignment = Alignment.Center,
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+
+private data class PlayerSettings(
+    @DrawableRes val avatar: Int,
+    val status: ItemStatus
+)
+
 @Preview
 @Composable
 private fun StartGamePreview() {
     MyApplicationTheme {
-        ContentBody { _, _ -> }
+        ContentBody { _ -> }
     }
 }
