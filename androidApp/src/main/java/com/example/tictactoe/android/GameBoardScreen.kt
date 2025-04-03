@@ -41,6 +41,7 @@ import com.example.tictactoe.domain.GameResult
 import com.example.tictactoe.domain.ItemId
 import com.example.tictactoe.domain.ItemStatus
 import com.example.tictactoe.android.helper.sideBorder
+import com.example.tictactoe.domain.PlayerData
 import com.example.tictactoe.ui.BorderSide
 import com.example.tictactoe.ui.GameUiModel
 
@@ -48,7 +49,7 @@ class GameBoardModel : ScreenModel {}
 
 data class GameBoardScreen(
     private val uiModel: GameBoardModel,
-    private val gameUiModel: GameUiModel = GameUiModel()
+    private val gameUiModel: GameUiModel
 ): Screen {
 
     @Composable
@@ -213,7 +214,7 @@ private fun DrawItem(
 private fun DefaultPreview() {
     MyApplicationTheme {
         ContentBody(
-            data = GameDataFactory.create(),
+            data = GameDataFactory.create(PlayerData(ItemStatus.X)),
             onAction = { _, _ -> },
             restartAction = {}
         )

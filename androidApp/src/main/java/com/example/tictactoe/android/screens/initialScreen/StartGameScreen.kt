@@ -31,11 +31,11 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.tictactoe.domain.ItemStatus
-import com.example.tictactoe.domain.PlayerData
 import com.example.tictactoe.android.MyApplicationTheme
 import com.example.tictactoe.android.R
 import com.example.tictactoe.android.screens.gameboard.GameboardScreen
+import com.example.tictactoe.domain.ItemStatus
+import com.example.tictactoe.domain.PlayerData
 import com.example.tictactoe.ui.GameUiModel
 
 class StartGameScreen : Screen {
@@ -66,7 +66,11 @@ class StartGameScreen : Screen {
             }
 
             ItemStatus.EMPTY -> {
-                navigator.push(GameboardScreen())
+                val uiModel = GameUiModel(
+                    player1 = PlayerData(ItemStatus.X),
+                    player2 = PlayerData(ItemStatus.O)
+                )
+                navigator.push(GameboardScreen(uiModel))
             }
         }
     }

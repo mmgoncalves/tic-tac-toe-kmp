@@ -13,15 +13,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 public class GameUiModel(
-    private val data: GameData = GameDataFactory.create(),
-    private val player1: PlayerData = PlayerData(ItemStatus.X),
-    private val player2: PlayerData = PlayerData(ItemStatus.O)
+    private val player1: PlayerData,
+    private val player2: PlayerData
 ) {
-
+    private var currentPlayer = player1
+    private val data: GameData = GameDataFactory.create(currentPlayer)
     private val _state = MutableStateFlow(data)
     val state = _state.asStateFlow()
-
-    private var currentPlayer = player1
 
     init {
         updateHeaderMessage()

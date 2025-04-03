@@ -43,7 +43,7 @@ import com.example.tictactoe.android.helper.sideBorder
 import com.example.tictactoe.ui.GameUiModel
 
 data class GameboardScreen(
-    private val gameUiModel: GameUiModel = GameUiModel()
+    private val gameUiModel: GameUiModel
 ) : Screen {
 
     @Composable
@@ -87,7 +87,7 @@ private fun ContentBody(
                 .padding(vertical = 150.dp)
         ) {
             Text(
-                text = "Vez do jogador O",
+                text = data.headerMessage,
                 modifier = Modifier.fillMaxWidth()
                     .padding(bottom = 100.dp),
                 textAlign = TextAlign.Center,
@@ -213,7 +213,7 @@ private fun DrawItem(
 private fun GameboardScreenPreview() {
     MyApplicationTheme {
         ContentBody(
-            data = GameDataFactory.create(),
+            data = GameDataFactory.create(PlayerData(ItemStatus.X)),
             onAction = { _, _ -> },
             restartAction = {}
         )
