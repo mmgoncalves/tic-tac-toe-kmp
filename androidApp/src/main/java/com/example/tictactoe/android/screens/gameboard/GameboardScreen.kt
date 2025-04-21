@@ -1,6 +1,5 @@
 package com.example.tictactoe.android.screens.gameboard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,19 +27,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.example.tictactoe.android.MyApplicationTheme
 import com.example.tictactoe.android.R
+import com.example.tictactoe.android.components.PlayerAvatar
 import com.example.tictactoe.android.helper.sideBorder
 import com.example.tictactoe.domain.ColumnId
 import com.example.tictactoe.domain.GameData
 import com.example.tictactoe.domain.GameDataFactory
+import com.example.tictactoe.domain.GameResult
 import com.example.tictactoe.domain.ItemId
 import com.example.tictactoe.domain.ItemStatus
 import com.example.tictactoe.domain.PlayerData
@@ -94,14 +93,29 @@ private fun ContentBody(
                 .padding(horizontal = 20.dp)
                 .padding(vertical = 150.dp)
         ) {
-            Text(
-                text = data.headerMessage,
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = 100.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
-            )
+            Column(
+                modifier = Modifier
+                    .padding(bottom = 30.dp)
+            ) {
+                Text(
+                    text = data.headerMessage,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White
+                )
+
+                val showAvatar = data.gameStatus.result != GameResult.Tie && data.headerMessage.isNotBlank()
+                if (showAvatar) {
+                    val id = getPlayerAvatarId(data.currentPlayer.status)
+                    PlayerAvatar(
+                        id = id,
+                        modifier = Modifier
+                            .align(alignment = Alignment.CenterHorizontally)
+                            .size(50.dp)
+                    )
+                }
+            }
 
             Card(
                 enabled = isEnable,
@@ -213,18 +227,14 @@ private fun DrawItem(
             }
     ) {
         if (status != ItemStatus.EMPTY) {
-            val id =
-                if (status == ItemStatus.X) R.drawable.player_x
-                else R.drawable.player_o
-            Image(
-                painter = painterResource(id = id),
-                contentDescription = null,
-                alignment = Alignment.Center,
-                contentScale = ContentScale.Fit
-            )
+            val id = getPlayerAvatarId(status)
+            PlayerAvatar(id)
         }
     }
 }
+
+private fun getPlayerAvatarId(status: ItemStatus): Int =
+    if(status == ItemStatus.X) R.drawable.player_x else R.drawable.player_o
 
 @Preview
 @Composable
