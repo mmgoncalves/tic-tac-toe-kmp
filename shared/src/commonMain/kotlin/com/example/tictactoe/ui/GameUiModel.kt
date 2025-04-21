@@ -50,7 +50,6 @@ public class GameUiModel(
             }
         }
 
-        toggleCurrentUser()
         _state.update {
             state.value.copy(
                 columns = updatedData
@@ -58,9 +57,13 @@ public class GameUiModel(
         }
 
         updateGameResult()
+        toggleCurrentUser()
     }
 
     private fun toggleCurrentUser() {
+        if (state.value.gameStatus.result != GameResult.Playing) {
+            return
+        }
         currentPlayer = if (currentPlayer == player1) player2 else { player1 }
         _state.update { state.value.copy(currentPlayer = currentPlayer) }
     }
@@ -149,13 +152,8 @@ public class GameUiModel(
     }
 
     private fun updateHeaderMessage() {
-        val message = when (state.value.gameStatus.result) {
-            GameResult.Playing -> "É a vez do jogador: ${state.value.currentPlayer.status.playerName}"
-            GameResult.Tie -> "O Jogo terminou empatado"
-            GameResult.Winner -> "Jogo finalizado, vencedor: ${state.value.gameStatus.winner?.status?.playerName}"
-        }
         _state.update {
-            state.value.copy(headerMessage = message)
+            state.value.copy(headerMessage = state.value.gameStatus.result.getMessage())
         }
     }
 }
