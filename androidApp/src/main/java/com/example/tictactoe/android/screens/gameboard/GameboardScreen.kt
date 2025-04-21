@@ -1,5 +1,6 @@
 package com.example.tictactoe.android.screens.gameboard
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,19 +28,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import com.example.tictactoe.android.MyApplicationTheme
+import com.example.tictactoe.android.R
+import com.example.tictactoe.android.helper.sideBorder
 import com.example.tictactoe.domain.ColumnId
 import com.example.tictactoe.domain.GameData
 import com.example.tictactoe.domain.GameDataFactory
 import com.example.tictactoe.domain.ItemId
 import com.example.tictactoe.domain.ItemStatus
 import com.example.tictactoe.domain.PlayerData
-import com.example.tictactoe.android.MyApplicationTheme
-import com.example.tictactoe.android.helper.sideBorder
 import com.example.tictactoe.ui.GameUiModel
 
 data class GameboardScreen(
@@ -53,8 +57,12 @@ data class GameboardScreen(
 
         ContentBody(
             data = state,
-            onAction = {_, _ -> },
-            restartAction = { }
+            onAction = {columnId, itemId ->
+                model.updateItem(columnId, itemId)
+            },
+            restartAction = {
+                model.restartGame()
+            }
         )
     }
 }
@@ -109,12 +117,15 @@ private fun ContentBody(
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.size(size)
             ) {
-                DrawColumn(data, isEnable, onAction, restartAction)
+                DrawColumn(data, isEnable, onAction)
             }
         }
 
         Card(
-            onClick = { isEnable = isEnable.not()},
+            onClick = {
+                isEnable = isEnable.not()
+//                restartAction()
+            },
             colors = CardDefaults.cardColors(
                 containerColor = Color.Transparent
             ),
@@ -142,8 +153,7 @@ private fun ContentBody(
 private fun DrawColumn(
     data: GameData,
     isEnable: Boolean,
-    onAction: (ColumnId, ItemId) -> Unit,
-    restartAction: () -> Unit
+    onAction: (ColumnId, ItemId) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -202,9 +212,17 @@ private fun DrawItem(
                 onAction(columnId, itemId)
             }
     ) {
-        Text(
-            text = status.playerName
-        )
+        if (status != ItemStatus.EMPTY) {
+            val id =
+                if (status == ItemStatus.X) R.drawable.player_x
+                else R.drawable.player_o
+            Image(
+                painter = painterResource(id = id),
+                contentDescription = null,
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Fit
+            )
+        }
     }
 }
 
