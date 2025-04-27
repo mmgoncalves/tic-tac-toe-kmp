@@ -137,8 +137,7 @@ private fun ContentBody(
 
         Card(
             onClick = {
-                isEnable = isEnable.not()
-//                restartAction()
+                restartAction()
             },
             colors = CardDefaults.cardColors(
                 containerColor = Color.Transparent
