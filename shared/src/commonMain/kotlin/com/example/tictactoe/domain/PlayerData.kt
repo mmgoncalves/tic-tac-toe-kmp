@@ -1,4 +1,4 @@
-package com.example.tictactoe.Domain
+package com.example.tictactoe.domain
 
 public data class PlayerData(
     val status: ItemStatus

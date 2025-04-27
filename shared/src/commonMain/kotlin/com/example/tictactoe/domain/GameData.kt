@@ -1,4 +1,4 @@
-package com.example.tictactoe.Domain
+package com.example.tictactoe.domain
 
 import com.example.tictactoe.ui.BorderSide
 
@@ -18,7 +18,7 @@ data class GameStatus(
 
 enum class GameResult(val text: String) {
     Playing("É a vez do jogador: ") {
-        override fun getMessage(): String? = text
+        override fun getMessage(): String = text
     },
     Tie("O Jogo terminou empatado") {
         override fun getMessage(): String = text
@@ -27,7 +27,7 @@ enum class GameResult(val text: String) {
         override fun getMessage(): String = text
     };
 
-    abstract fun getMessage(): String?
+    abstract fun getMessage(): String
 }
 
 enum class ItemStatus {
@@ -67,7 +67,7 @@ enum class ItemId {
 
 object GameDataFactory {
     fun create(
-        currentPlayer: PlayerData = PlayerData(ItemStatus.X)
+        currentPlayer: PlayerData
     ): GameData {
         return GameData(
             columns = mapOf(

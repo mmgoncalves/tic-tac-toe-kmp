@@ -1,7 +1,6 @@
 package com.example.tictactoe.android.screens.initialScreen
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,8 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,11 +28,13 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.tictactoe.Domain.ItemStatus
-import com.example.tictactoe.Domain.PlayerData
 import com.example.tictactoe.android.MyApplicationTheme
 import com.example.tictactoe.android.R
+import com.example.tictactoe.android.components.PlayerAvatar
 import com.example.tictactoe.android.screens.gameboard.GameboardScreen
+import com.example.tictactoe.domain.ItemStatus
+import com.example.tictactoe.domain.PlayerData
+import com.example.tictactoe.ui.GameUiModel
 
 class StartGameScreen : Screen {
     @Composable
@@ -47,10 +46,30 @@ class StartGameScreen : Screen {
     }
 
     private fun handleNavigation(selectedPlayer: ItemStatus, navigator: Navigator) {
-        if (selectedPlayer == ItemStatus.X) {
-            navigator.push(GameboardScreen(PlayerData(status = ItemStatus.X), PlayerData(status = ItemStatus.O)))
-        } else {
-            navigator.push(GameboardScreen(PlayerData(status = ItemStatus.O), PlayerData(status = ItemStatus.X)))
+        when (selectedPlayer) {
+            ItemStatus.X -> {
+                val uiModel = GameUiModel(
+                    player1 = PlayerData(ItemStatus.X),
+                    player2 = PlayerData(ItemStatus.O)
+                )
+                navigator.push(GameboardScreen(uiModel))
+            }
+
+            ItemStatus.O -> {
+                val uiModel = GameUiModel(
+                    player1 = PlayerData(ItemStatus.O),
+                    player2 = PlayerData(ItemStatus.X)
+                )
+                navigator.push(GameboardScreen(uiModel))
+            }
+
+            ItemStatus.EMPTY -> {
+                val uiModel = GameUiModel(
+                    player1 = PlayerData(ItemStatus.X),
+                    player2 = PlayerData(ItemStatus.O)
+                )
+                navigator.push(GameboardScreen(uiModel))
+            }
         }
     }
 }
@@ -69,7 +88,6 @@ private fun ContentBody(onClick: (ItemStatus) -> Unit) {
                 )
             )
     ) {
-
         Text(
             text = "TIC-TAC-TOE",
             modifier = Modifier
@@ -139,12 +157,7 @@ private fun CardBox(settings: PlayerSettings, onClick: (ItemStatus) -> Unit) {
             .size(143.dp)
 
     ) {
-        Image(
-            painter = painterResource(id = settings.avatar),
-            contentDescription = null,
-            alignment = Alignment.Center,
-            contentScale = ContentScale.Fit
-        )
+        PlayerAvatar(settings.avatar)
     }
 }
 

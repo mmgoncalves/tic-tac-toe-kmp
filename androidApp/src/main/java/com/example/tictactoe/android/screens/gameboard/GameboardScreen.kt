@@ -32,20 +32,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import com.example.tictactoe.Domain.ColumnId
-import com.example.tictactoe.Domain.GameData
-import com.example.tictactoe.Domain.GameDataFactory
-import com.example.tictactoe.Domain.ItemId
-import com.example.tictactoe.Domain.ItemStatus
-import com.example.tictactoe.Domain.PlayerData
 import com.example.tictactoe.android.MyApplicationTheme
+import com.example.tictactoe.android.R
+import com.example.tictactoe.android.components.PlayerAvatar
 import com.example.tictactoe.android.helper.sideBorder
+import com.example.tictactoe.domain.ColumnId
+import com.example.tictactoe.domain.GameData
+import com.example.tictactoe.domain.GameDataFactory
+import com.example.tictactoe.domain.GameResult
+import com.example.tictactoe.domain.ItemId
+import com.example.tictactoe.domain.ItemStatus
+import com.example.tictactoe.domain.PlayerData
 import com.example.tictactoe.ui.GameUiModel
 
 data class GameboardScreen(
-    private val firstPlayer: PlayerData,
-    private val secondPlayer: PlayerData,
-    private val gameUiModel: GameUiModel = GameUiModel()
+    private val gameUiModel: GameUiModel
 ) : Screen {
 
     @Composable
@@ -55,8 +56,12 @@ data class GameboardScreen(
 
         ContentBody(
             data = state,
-            onAction = {_, _ -> },
-            restartAction = { }
+            onAction = {columnId, itemId ->
+                model.updateItem(columnId, itemId)
+            },
+            restartAction = {
+                model.restartGame()
+            }
         )
     }
 }
@@ -69,7 +74,7 @@ private fun ContentBody(
     restartAction: () -> Unit
 ) {
     val size = LocalConfiguration.current.screenWidthDp.dp - 40.dp
-    var isEnable by remember { mutableStateOf(false) }
+    var isEnable by remember { mutableStateOf(true) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -88,14 +93,29 @@ private fun ContentBody(
                 .padding(horizontal = 20.dp)
                 .padding(vertical = 150.dp)
         ) {
-            Text(
-                text = "Vez do jogador O",
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = 100.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
-            )
+            Column(
+                modifier = Modifier
+                    .padding(bottom = 30.dp)
+            ) {
+                Text(
+                    text = data.headerMessage,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White
+                )
+
+                val showAvatar = data.gameStatus.result != GameResult.Tie && data.headerMessage.isNotBlank()
+                if (showAvatar) {
+                    val id = getPlayerAvatarId(data.currentPlayer.status)
+                    PlayerAvatar(
+                        id = id,
+                        modifier = Modifier
+                            .align(alignment = Alignment.CenterHorizontally)
+                            .size(50.dp)
+                    )
+                }
+            }
 
             Card(
                 enabled = isEnable,
@@ -111,12 +131,14 @@ private fun ContentBody(
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.size(size)
             ) {
-                DrawColumn(data, isEnable, onAction, restartAction)
+                DrawColumn(data, isEnable, onAction)
             }
         }
 
         Card(
-            onClick = { isEnable = isEnable.not()},
+            onClick = {
+                restartAction()
+            },
             colors = CardDefaults.cardColors(
                 containerColor = Color.Transparent
             ),
@@ -144,8 +166,7 @@ private fun ContentBody(
 private fun DrawColumn(
     data: GameData,
     isEnable: Boolean,
-    onAction: (ColumnId, ItemId) -> Unit,
-    restartAction: () -> Unit
+    onAction: (ColumnId, ItemId) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -204,18 +225,22 @@ private fun DrawItem(
                 onAction(columnId, itemId)
             }
     ) {
-        Text(
-            text = status.playerName
-        )
+        if (status != ItemStatus.EMPTY) {
+            val id = getPlayerAvatarId(status)
+            PlayerAvatar(id)
+        }
     }
 }
+
+private fun getPlayerAvatarId(status: ItemStatus): Int =
+    if(status == ItemStatus.X) R.drawable.player_x else R.drawable.player_o
 
 @Preview
 @Composable
 private fun GameboardScreenPreview() {
     MyApplicationTheme {
         ContentBody(
-            data = GameDataFactory.create(),
+            data = GameDataFactory.create(PlayerData(ItemStatus.X)),
             onAction = { _, _ -> },
             restartAction = {}
         )
